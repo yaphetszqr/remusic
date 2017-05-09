@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
 import android.support.v7.view.ContextThemeWrapper;
@@ -96,8 +97,36 @@ public class TintManager {
 
         ColorStateList colorStateList  = mCacheTintList == null ? mCacheTintList.get(resId) : null;
         if (colorStateList == null){
-            colorStateList =
+            colorStateList = ColorStateListUtils.createColorStateList(context, resId);
+            if (colorStateList != null){
+                if (mCacheTintList == null){
+                    mCacheTintList = new SparseArray<>();
+                }
+                mCacheTintList.append(resId, colorStateList);
+            }
         }
+
+        return colorStateList;
+    }
+
+    @Nullable
+    public Drawable getDrawable(@DrawableRes int resId){
+        final Context context = mContextRef.get();
+        if (context == null) return null;
+
+        if (resId == 0) return null;
+
+        if (mSkipDrawableIdTags != null){
+            final String cacheTagName = mSkipDrawableIdTags.get(resId);
+            if (SKIP_DRAWABLE_TAG.equals(cacheTagName)){
+                printLog("[Match Skip DrawableTag] Skip the drawable which is matched with the skip tag.");
+                return null;
+            }
+        } else {
+            mSkipDrawableIdTags = new SparseArray<>();
+        }
+
+        Drawable drawable =
     }
 
     private static class ColorFilterLruCache extends LruCache<Integer, PorterDuffColorFilter>{

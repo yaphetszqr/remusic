@@ -1,6 +1,8 @@
 package com.bilibili.magicasakura.utils;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
@@ -44,5 +46,44 @@ public class ThemeUtils {
             return null;
 
         Drawable drawable = context.getResources().getDrawable(resId);
+        return tintDrawableByColorId(context, drawable, colorId);
+    }
+
+    public static Drawable tintDrawableByColorId(Context context, Drawable drawable, @ColorRes int colorId){
+        if (drawable == null) return null;
+        if (colorId <= 0) return null;
+        return tintDrawable(drawable, replaceColor(context, context.getResources().getColor(colorId)));
+    }
+
+    public static Drawable tintDrawable(Drawable drawable, @ColorInt int color){
+        return tintDrawable(drawable, color, PorterDuff.Mode.SRC_IN);
+    }
+
+    public static Drawable tintDrawable(Drawable drawable, ColorStateList csl, PorterDuff.Mode mode){
+        if (drawable == null) return null;
+        Drawable wrapper = DrawableCompat.wrap(drawable.mutate());
+        DrawableCompat.setTintList(wrapper, csl);
+        DrawableCompat.setTintMode(drawable, mode);
+        return wrapper;
+    }
+
+    public static switchColor mSwitchColor;
+
+    static @ColorInt
+    int replaceColor(Context context, @ColorInt int color){
+        return mSwitchColor == null ? Color.TRANSPARENT : mSwitchColor.replaceColor(context, color);
+    }
+
+    static @ColorInt
+    int replaceColorById(Context context, @ColorRes int colorId){
+        return mSwitchColor == null ? Color.TRANSPARENT : mSwitchColor.replaceColorById(context, colorId);
+    }
+
+    public interface switchColor{
+        @ColorInt
+        int replaceColorById(Context context, @ColorRes int colorId);
+
+        @ColorInt
+        int replaceColor(Context context, @ColorInt int color);
     }
 }
