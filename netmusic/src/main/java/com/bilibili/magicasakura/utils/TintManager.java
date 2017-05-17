@@ -7,9 +7,11 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.DrawableUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -126,7 +128,31 @@ public class TintManager {
             mSkipDrawableIdTags = new SparseArray<>();
         }
 
-        Drawable drawable =
+        Drawable drawable = getDrawable(context, resId);
+
+        if (drawable == null){
+            drawable = DrawableUtils.
+        }
+    }
+
+    private Drawable getDrawable(@NonNull final Context context, final int key){
+
+        synchronized (mDrawableCacheLock){
+            if (mCacheDrawables == null) return null;
+        }
+
+        final WeakReference<Drawable.ConstantState> weakReference = mCacheDrawables.get(key);
+        if(weakReference != null){
+            Drawable.ConstantState cs = weakReference.get();
+            if (cs != null){
+                printLog("[getCacheDrawable] Get drawable from cache: " +
+                    context.getResources().getResourceName(key));
+
+                return cs.newDrawable();
+            }
+        }
+
+        return null;
     }
 
     private static class ColorFilterLruCache extends LruCache<Integer, PorterDuffColorFilter>{
