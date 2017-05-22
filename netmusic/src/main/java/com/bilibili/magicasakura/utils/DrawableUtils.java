@@ -72,7 +72,7 @@ public abstract class DrawableUtils {
         final String name = parser.getName();
         switch (name){
             case "selector":
-                drawableUtils = new State
+                drawableUtils = null;
                 break;
         }
     }
